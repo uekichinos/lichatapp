@@ -2,5 +2,5 @@
 A simple chat app build using Laravel 8 with Jetstream Inertia (Vue2).
 
 **Modules:**
-=> create rooms
-=> send message (chatting)
+1. create rooms
+2. send message (chatting)
