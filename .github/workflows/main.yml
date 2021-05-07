@@ -64,7 +64,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUBX_TOKENX }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
-          projectBaseDir: lichatapp
+          projectBaseDir: /github/workspace/lichatapp
           args: >
             -Dsonar.organization=lichatapp
             -Dsonar.projectKey=lichatapp
