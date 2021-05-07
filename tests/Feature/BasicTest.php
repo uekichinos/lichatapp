@@ -51,7 +51,7 @@ class BasicTest extends TestCase
     {
         $user = [
           'email' => 'megatzulkhairi@gmail.com',
-          'password' => 'Password123x'
+          'password' => 'Password123'
         ];
     
         $response = $this->json('POST', '/login', $user);
@@ -71,6 +71,6 @@ class BasicTest extends TestCase
     //         'owner' => 1
     //     ]);
     //     $room->assertStatus(200);
-    //     // $this->assertTrue($room->has('This is sample'));
+    //     $this->assertTrue($room->has('This is sample'));
     // }
 }
