@@ -63,3 +63,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUBX_TOKENX }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          projectBaseDir: lichatapp
+          args: >
+            -Dsonar.organization=lichatapp
+            -Dsonar.projectKey=lichatapp
+            -Dsonar.python.coverage.reportPaths=coverage.xml
+            -Dsonar.sources=lib/
+            -Dsonar.test.exclusions=tests/**
+            -Dsonar.tests=tests/
+            -Dsonar.verbose=true
