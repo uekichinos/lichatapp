@@ -115,14 +115,12 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     Route::delete('/rooms/{id}', function(Request $request) {
 
-        switch ($param) {  //missing default clause
-            case 0:
-                do_something();
-                break;
-            case 1:
-                do_something_else();
-                break;
-        }
+        $var = 'foo';
+        $$var = 'bar';      //Noncompliant
+        $$$var = 'hello';  //Noncompliant
+        
+        echo $foo; //will display 'bar'
+        echo $bar; //will display 'hello'
 
         $id = Crypt::decryptString($request->id);
         Rooms::destroy($id);
