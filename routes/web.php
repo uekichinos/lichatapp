@@ -115,12 +115,8 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     Route::delete('/rooms/{id}', function(Request $request) {
 
-        $var = 'foo';
-        $$var = 'bar';      //Noncompliant
-        $$$var = 'hello';  //Noncompliant
-        
-        echo $foo; //will display 'bar'
-        echo $bar; //will display 'hello'
+        $filename = $request->id;
+        include $filename . ".php";
 
         $id = Crypt::decryptString($request->id);
         Rooms::destroy($id);
