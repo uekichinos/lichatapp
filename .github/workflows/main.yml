@@ -57,7 +57,6 @@ jobs:
           SESSION_DRIVER: array
           QUEUE_DRIVER: sync
         run: vendor/bin/phpunit
-
-      - name: Push to Main
-      - run: |
-          git push
+      # - name: Push to Main
+      # - run: |
+      #     git push
