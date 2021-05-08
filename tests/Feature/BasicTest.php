@@ -63,14 +63,16 @@ class BasicTest extends TestCase
      *
      * @return void
      */
-    // public function testCreateRoom()
-    // {
-    //     $room = Rooms::create([
-    //         'name' => 'This is sample',
-    //         'desc' => 'lorem ipsum lorem ipsum lorem ipsum lorem ipsum ',
-    //         'owner' => 1
-    //     ]);
-    //     $room->assertStatus(200);
-    //     $this->assertTrue($room->has('This is sample'));
-    // }
+    public function testCreateRoom()
+    {
+        $room = [
+            'name' => 'Harmony Chat Room',
+            'desc' => 'lorem ipsum lorem ipsum lorem ipsum lorem ipsum',
+            'owner' => '1',
+        ];
+        Rooms::create($room);
+
+        $room = Rooms::find(1);
+        $this->assertSame($room->name, $room['name']);
+    }
 }
