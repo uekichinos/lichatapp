@@ -64,4 +64,4 @@ jobs:
           git config --global user.name "Ueki Chinos"
           git add .
           git commit -m "latest update"
-          git push dev
+          git push origin HEAD:dev
