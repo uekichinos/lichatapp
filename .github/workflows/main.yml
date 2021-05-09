@@ -59,7 +59,7 @@ jobs:
         run: vendor/bin/phpunit
 
       - name: Push to Dev
-      - run: |
+        run: |
           git add .
           git commit -m "latest update"
           git push origin dev
