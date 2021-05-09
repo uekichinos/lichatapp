@@ -58,11 +58,6 @@ class BasicTest extends TestCase
         $response->assertStatus(200);
     }
 
-    /**
-     * A basic feature test example.
-     *
-     * @return void
-     */
     public function testCreateRoom()
     {
         $room = [
@@ -73,6 +68,19 @@ class BasicTest extends TestCase
         Rooms::create($room);
 
         $room = Rooms::find(1);
+        $this->assertSame($room->name, $room['name']);
+    }
+
+    public function testCreateRoom2()
+    {
+        $room = [
+            'name' => 'Harmony Chat Room 2',
+            'desc' => 'lorem ipsum lorem ipsum lorem ipsum lorem ipsum',
+            'owner' => '1',
+        ];
+        Rooms::create($room);
+
+        $room = Rooms::find(2);
         $this->assertSame($room->name, $room['name']);
     }
 }
