@@ -19,8 +19,8 @@
                         </div>
 
                         <div class="bg-gray-200 bg-opacity-25 grid grid-cols-1 md:grid-cols-2">
-                            <div class="p-6" v-if="messages">
-                                <div v-for="(message, index) in messages" :key="index" class="mb-4 pb-4 border-b-2">
+                            <div class="p-6" v-if="messages.data">
+                                <div v-for="(message, index) in messages.data" :key="index" class="mb-4 pb-4 border-b-2">
                                     <div class="text-gray-400 font-bold text-sm">
                                         {{ message.person }}
                                         <span @click="deleteMessage(message.id_encrypt)" class="cursor-pointer float-right font-normal">
@@ -33,10 +33,9 @@
                                     <div class="text-gray-400 italic text-right text-sm">
                                         {{ message.cleandate }}
                                     </div>
-                                    <div>
-
-                                    </div>
+                                    <div></div>
                                 </div>
+                                <pagination :links="messages.links" />
                             </div>
 
                             <div class="p-6 border-t border-gray-200 md:border-t-0 md:border-l">
@@ -68,17 +67,19 @@
 <script>
 import AppLayout from "@/Layouts/AppLayout";
 import JetButton from "@/Jetstream/Button";
+import Pagination from "@/Jetstream/Pagination";
 
 export default {
     components: {
         JetButton,
         AppLayout,
+        Pagination,
     },
     props: {
         room: Array,
         id_encrypt: String,
         errors: Object,
-        messages: Array,
+        messages: Object,
     },
     data() {
         return {

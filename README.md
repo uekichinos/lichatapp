@@ -1,13 +1,13 @@
-# Chat App
+# Lichatapp (Laravel Inertia Chat App)
 A simple chat app build using Laravel 8 with Jetstream Inertia (Vue2).
 
 ## Modules
-1. create room
-2. send message (chatting)
+1. rooms (create and join room)
+2. send message (chat)
+3. navigation (rooms and chat module)
 
 ## Future plan
-1. navigation
-2. room mode (public/private)
-3. invitation to private room
+1. room mode (public/private)
+2. invitation to private room
 
-- fin -
+finish -------

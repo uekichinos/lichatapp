@@ -22,9 +22,9 @@
                         </div>
 
                         <div class="bg-gray-200 bg-opacity-25 grid grid-cols-1 md:grid-cols-4">
-                            <div class="p-6 col-span-3" v-if="rooms">
+                            <div class="p-6 col-span-3" v-if="rooms.data">
                                 <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                                    <div v-for="(room, index) in rooms" :key="index" class="p-5 border-1 rounded-md bg-white shadow">
+                                    <div v-for="(room, index) in rooms.data" :key="index" class="p-5 border-1 rounded-md bg-white shadow">
                                         <div class="text-md font-bold">
                                             {{ room.name }} <span class="font-normal text-sm italic">by {{ room.person }}</span>
 
@@ -41,6 +41,9 @@
                                             </jet-button>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="pt-6">
+                                    <pagination :links="rooms.links" />
                                 </div>
                             </div>
                             <div class="p-6 border-t border-gray-200 md:border-t-0 md:border-l">
@@ -75,15 +78,17 @@
 import AppLayout from "@/Layouts/AppLayout";
 import JetButton from "@/Jetstream/Button";
 import JetNavLink from '@/Jetstream/NavLink'
+import Pagination from "@/Jetstream/Pagination";
 
 export default {
     components: {
         JetButton,
         JetNavLink,
         AppLayout,
+        Pagination,
     },
     props: {
-        rooms: Array,
+        rooms: Object,
         errors: Object,
     },
     data() {
