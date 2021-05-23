@@ -71,7 +71,7 @@
                                 <a
                                     href="https://laravel.com/docs"
                                     class="underline text-gray-900 dark:text-white"
-                                    >Documentation.</a
+                                    >Documentation</a
                                 >
                             </div>
                         </div>
