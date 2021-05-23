@@ -57,4 +57,5 @@ jobs:
         run: vendor/bin/phpunit
 
       - name: Push to server
-        run: Processing...
+        run: /
+          echo "Processing.."
