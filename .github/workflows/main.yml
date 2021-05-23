@@ -56,7 +56,7 @@ jobs:
           QUEUE_DRIVER: sync
         run: vendor/bin/phpunit
 
-      - name: Push to server.
+      - name: Push to server
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.UC_HOST }}
