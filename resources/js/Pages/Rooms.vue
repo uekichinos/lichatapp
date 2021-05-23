@@ -21,24 +21,29 @@
                             </div>
                         </div>
 
-                        <div class="bg-gray-200 bg-opacity-25 grid grid-cols-1 md:grid-cols-4">
-                            <div class="p-6 col-span-3" v-if="rooms.data">
+                        <div class="bg-gray-200 bg-opacity-25 grid grid-flow-col grid-cols-3 grid-rows-1">
+                            <div class="p-6 col-span-2" v-if="rooms.data">
                                 <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                                    <div v-for="(room, index) in rooms.data" :key="index" class="p-5 border-1 rounded-md bg-white shadow">
-                                        <div class="text-md font-bold">
-                                            {{ room.name }} <span class="font-normal text-sm italic">by {{ room.person }}</span>
-
-                                            <span @click="deleteRoom(room.id_encrypt)" class="cursor-pointer float-right font-normal">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="#db272d">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                </svg>
+                                    <div v-for="(room, index) in rooms.data" :key="index" class="border-1 rounded-md bg-white shadow">
+                                        <div class="grid grid-cols-1 md:grid-cols-1 rounded-t-md p-5 text-md font-bold bg-indigo-500">
+                                            <span class="text-white font-semibold">
+                                                {{ room.name }} <br>
+                                                <span class="font-normal text-sm italic">
+                                                    by {{ room.person }}
+                                                    <span v-if="room.private == true">(Private)</span>
+                                                </span>
                                             </span>
                                         </div>
-                                        <div class="mt-3 text-sm text-gray-500">{{ room.desc }}</div>
-                                        <div class="mt-3 text-sm text-gray-400 float-right">
-                                            <jet-button @click="enterRoom(room.id_encrypt)" class="bg-green-300 hover:bg-green-500 mr-5">
-                                                chat
-                                            </jet-button>
+                                        <div class="pl-5 pt-5 pr-5 text-sm text-gray-500">{{ room.desc }}</div>
+                                        <div class="p-5 grid grid-cols-1 gap-4">
+                                            <div class="text-sm text-gray-400">
+                                                <jet-button @click="enterRoom(room.id_encrypt)" class="bg-green-300 hover:bg-green-500 mr-3">
+                                                    chat
+                                                </jet-button>
+                                                <jet-button v-if="room.isowner == true" @click="deleteRoom(room.id_encrypt)" class="bg-red-300 hover:bg-red-500">
+                                                    terminate
+                                                </jet-button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -46,13 +51,20 @@
                                     <pagination :links="rooms.links" />
                                 </div>
                             </div>
-                            <div class="p-6 border-t border-gray-200 md:border-t-0 md:border-l">
+                            <div class="p-6 border-gray-200 border-l border-gray-200">
                                 <form @submit.prevent="submit">
-                                    <div class="text font-bold">Create Room</div><br>
+                                    <div class="text-2xl font-bold">Create Room</div>
                                     <input type="text" v-model="form.name" class="w-full mb-3 rounded-md border-gray-300 text-sm" placeholder="room name"><br>
-                                    <textarea v-model="form.desc" class="w-full mb-3 rounded-md border-gray-300 text-sm" rows="4" placeholder="description"></textarea>
-
-                                    <div class="grid grid-flow-col grid-cols-1 grid-rows-2">
+                                    <textarea v-model="form.desc" class="w-full mb-1 rounded-md border-gray-300 text-sm" rows="4" placeholder="description"></textarea>
+                                    <div class="block">
+                                        <div>
+                                            <label class="inline-flex items-center">
+                                                <Checkbox v-model="form.private" class="form-checkbox text-indigo-600" />
+                                                <span class="ml-2">Private</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-flow-col grid-cols-1 grid-rows-2 mt-5">
                                         <div class="w-full">
                                             <jet-button :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                                                 Create
@@ -79,6 +91,7 @@ import AppLayout from "@/Layouts/AppLayout";
 import JetButton from "@/Jetstream/Button";
 import JetNavLink from '@/Jetstream/NavLink'
 import Pagination from "@/Jetstream/Pagination";
+import Checkbox from "@/Jetstream/Checkbox";
 
 export default {
     components: {
@@ -86,6 +99,7 @@ export default {
         JetNavLink,
         AppLayout,
         Pagination,
+        Checkbox,
     },
     props: {
         rooms: Object,
@@ -93,20 +107,20 @@ export default {
     },
     data() {
         return {
-            form: { name: "", desc: "" },
+            form: { name: "", desc: "", private: false }, 
         };
     },
     methods: {
         submit() {
-            this.$inertia.post("/rooms", this.form);
+            this.$inertia.post(route("room.store", this.form));
         },
         deleteRoom(index) {
             if(confirm("Do you really want to delete?")){
-                this.$inertia.delete("/rooms/"+index);
+                this.$inertia.delete(route("room.destroy", index));
             }
         },
         enterRoom(index) {
-            this.$inertia.get("/chat/"+index);
+            this.$inertia.get(route("message.index", index));
         }
     },
 };

@@ -9,6 +9,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
+use App\Http\Controllers\RoomController;
+use App\Http\Controllers\MemberController;
+use App\Http\Controllers\MessageController;
+use App\Http\Controllers\DashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,100 +38,24 @@ Route::get('/', function () {
 
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
-    })->name('dashboard');
+    /* dashboard */
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::get('/chat/{id}', function (Request $request) {
+    /* message */
+    Route::get('/message/{id}', [MessageController::class, 'index'])->name('message.index');
+    Route::post('/message', [MessageController::class, 'store'])->name('message.store');
+    Route::delete('/message/{id}', [MessageController::class, 'destroy'])->name('message.destroy');
 
-        $id = Crypt::decryptString($request->id);
+    /* room */
+    Route::get('/room', [RoomController::class, 'index'])->name('room.index');
+    Route::post('/room', [RoomController::class, 'store'])->name('room.store');
+    Route::delete('/room/{id}', [RoomController::class, 'destroy'])->name('room.destroy');
 
-        $room = Rooms::where('id', $id)->get();
-        if(count($room) <= 0) {
-            echo "invalid room id";
-            exit;
-        }
-
-        $limit = 10;
-        $messages = Message::where('room_id', $id)->orderBy('created_at', 'desc')->paginate($limit)->through(function ($message) {
-            return [
-                'memberid' => $message->memberid,
-                'room_id' => $message->room_id,
-                'text' => nl2br($message->text),
-                'cleandate' => date('d M Y, H:ia', strtotime($message->created_at)),
-                'person' => User::find($message->memberid)->name,
-                'id_encrypt' => Crypt::encryptString($message->id)
-            ];
-        });
-
-        return Inertia::render('Chat', ['messages' => $messages, 'room' => $room, 'id_encrypt' => $request->id]);
-    })->name('chat');
-
-    Route::post('/messages', function(Request $request) {
-
-        $room_id = Crypt::decryptString($request->id_encrypt);
-
-        $validated = $request->validate([
-            'text' => 'required|min:5'
-        ]);
-
-        Message::create(['text' => strip_tags($request->text), 'memberid' => Auth::user()->id, 'room_id' => $room_id]);
-
-        return redirect('/chat/'.$request->id_encrypt);
-    })->name('message.store');
-
-    Route::delete('/messages/{id}', function(Request $request) {
-
-        $id = Crypt::decryptString($request->id);
-
-        $rooms = Message::where('id', $id)->get();
-        if(count($rooms) > 0) {
-            foreach($rooms as $key => $room) {
-                $room_id = Crypt::encryptString($room->room_id);
-            }
-        }
-
-        Message::where('id', $id)->delete();
-
-        return redirect('/chat/'.$room_id);
-    })->name('message.delete');
-
-    Route::get('/rooms', function(Request $request) {
-
-        $limit = 10;
-        $rooms = Rooms::orderBy('created_at', 'desc')->paginate($limit)->through(function ($room) {
-            return [
-                'name' => $room->name,
-                'desc' => $room->desc,
-                'cleandate' => date('d M Y, H:ia', strtotime($room->created_at)),
-                'person' => User::find($room->owner)->name,
-                'id_encrypt' => Crypt::encryptString($room->id)
-            ];
-        });
-        
-        return Inertia::render('Rooms', ['rooms' => $rooms]);
-    })->name('rooms.index');
-
-    Route::post('/rooms', function(Request $request) {
-
-        $customAttr = ['name' => 'Room Name', 'desc' => 'Description'];
-
-        $validated = $request->validate([
-            'name' => 'required|min:5',
-            'desc' => 'required|max:120',
-        ], [], $customAttr);
-
-        Rooms::create(['name' => $request->name, 'desc' => $request->desc, 'owner' => Auth::user()->id]);
-
-        return redirect('/rooms');
-    })->name('rooms.store');
-
-    Route::delete('/rooms/{id}', function(Request $request) {
-
-        $id = Crypt::decryptString($request->id);
-        Rooms::destroy($id);
-        Message::where('room_id', $id)->delete();
-        return redirect('/rooms');
-    })->name('rooms.delete');
+    /* member */
+    Route::delete('/member/{id}', [MemberController::class, 'destroy'])->name('member.destroy');
+    Route::post('/invite', [MemberController::class, 'invite'])->name('member.invite');
+    Route::delete('/invite/{id}', [MemberController::class, 'invitedestroy'])->name('member.invitedestroy');
+    Route::post('/invite/accept/{id}', [MemberController::class, 'inviteaccept'])->name('member.inviteaccept');
+    Route::post('/invite/decline/{id}', [MemberController::class, 'invitedecline'])->name('member.invitedecline');
 });
 

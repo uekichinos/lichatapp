@@ -17,6 +17,7 @@ class CreateRoomsTable extends Migration
             $table->id();
             $table->string('name')->nullable();
             $table->string('desc')->nullable();
+            $table->boolean('private')->default(0);
             $table->integer('owner');
             $table->timestamps();
         });

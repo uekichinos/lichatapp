@@ -20,7 +20,7 @@
                                 <jet-nav-link :href="route('dashboard')" :active="route().current('dashboard')">
                                     Dashboard
                                 </jet-nav-link>
-                                <jet-nav-link :href="route('rooms.index')" :active="route().current('rooms.index')">
+                                <jet-nav-link :href="route('room.index')" :active="route().current('room.index')||route().current('message.index')">
                                     Rooms
                                 </jet-nav-link>
                             </div>
@@ -146,7 +146,7 @@
                         <jet-responsive-nav-link :href="route('dashboard')" :active="route().current('dashboard')">
                             Dashboard
                         </jet-responsive-nav-link>
-                        <jet-responsive-nav-link :href="route('rooms.index')" :active="route().current('rooms.index')">
+                        <jet-responsive-nav-link :href="route('room.index')" :active="route().current('room.index')">
                             Rooms
                         </jet-responsive-nav-link>
                     </div>
