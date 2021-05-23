@@ -58,4 +58,4 @@ jobs:
 
       - name: Push to server
         run: /
-          echo "Processing.."
+          ll
