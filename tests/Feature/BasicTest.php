@@ -51,7 +51,7 @@ class BasicTest extends TestCase
     {
         $user = [
           'email' => 'megatzulkhairi@gmail.com',
-          'password' => 'Password1234'
+          'password' => 'Password123'
         ];
     
         $response = $this->json('POST', '/login', $user);
