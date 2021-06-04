@@ -7,6 +7,7 @@ A simple chat app build using Laravel 8 with Jetstream Inertia (Vue2).
 3. navigation (rooms and chat module)
 4. room mode (public/private)
 5. invitation to private room
+6. simple dashboard
 
 ## Future plan
 1. email invitation

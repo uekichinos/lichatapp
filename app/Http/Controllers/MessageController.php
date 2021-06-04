@@ -31,21 +31,21 @@ class MessageController extends Controller
 
         /* get messages record */
         $limit = 10;
-        $messages = Message::where('roomid', $id)->orderBy('created_at', 'desc')->paginate($limit)->through(function ($message) {
+        $messages = Message::where('room_id', $id)->orderBy('created_at', 'desc')->paginate($limit)->through(function ($message) {
             return [
-                'memberid' => $message->memberid,
-                'roomid' => $message->roomid,
+                'memberid' => $message->member_id,
+                'roomid' => $message->room_id,
                 'text' => nl2br($message->text),
                 'cleandate' => date('d M Y, H:ia', strtotime($message->created_at)),
-                'person' => User::find($message->memberid)->name,
+                'person' => User::find($message->member_id)->name,
                 'id_encrypt' => Crypt::encryptString($message->id),
-                'isowner' => ($message->memberid == Auth::user()->id ? true : false)
+                'isowner' => ($message->member_id == Auth::user()->id ? true : false)
             ];
         });
 
         /* get invitation record */
         $limit = 5;
-        $invites = Invite::where('roomid', $id)->orderBy('created_at', 'desc')->paginate($limit)->through(function ($invite) {
+        $invites = Invite::where('room_id', $id)->orderBy('created_at', 'desc')->paginate($limit)->through(function ($invite) {
             return [
                 'email' => $invite->email,
                 'cleandate' => date('d M Y, H:ia', strtotime($invite->created_at)),
@@ -55,13 +55,12 @@ class MessageController extends Controller
 
         /* get member associate with this room */
         $limit = 5;
-        $members = Member::where('roomid', $id)->orderBy('created_at', 'desc')->paginate($limit)->through(function ($member) {
+        $members = Member::where('rooms_id', $id)->orderBy('created_at', 'desc')->paginate($limit)->through(function ($member) {
             
-            $room = Rooms::find($member->roomid);
-            
+            $room = Rooms::find($member->rooms_id);
             return [
-                'memberid' => $member->memberid,
-                'person' => User::find($member->memberid)->name,
+                'memberid' => $member->member_id,
+                'person' => User::find($member->member_id)->name,
                 'cleandate' => date('d M Y, H:ia', strtotime($member->created_at)),
                 'id_encrypt' => Crypt::encryptString($member->id)
             ];
@@ -104,7 +103,7 @@ class MessageController extends Controller
             'text' => 'required|min:5'
         ]);
 
-        Message::create(['text' => strip_tags($request->text), 'memberid' => Auth::user()->id, 'roomid' => $room_id]);
+        Message::create(['text' => strip_tags($request->text), 'member_id' => Auth::user()->id, 'room_id' => $room_id]);
 
         return redirect(route('message.index', $request->id_encrypt));
     }

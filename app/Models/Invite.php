@@ -11,5 +11,5 @@ class Invite extends Model
 
     protected $table = 'invite';
     
-    protected $fillable = ['roomid', 'email'];
+    protected $fillable = ['room_id', 'email'];
 }

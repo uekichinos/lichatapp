@@ -39,6 +39,26 @@
                             </div>
 
                             <div class="p-6 border-t border-gray-200 md:border-t-0 md:border-l">
+
+                                <div class="gap-2">
+                                    <div @click="closeRoom()">
+                                        <button class="mb-2 w-full bg-yellow-500 hover:bg-yellow-400 text-white font-bold py-2 px-4 border-b-4 border-yellow-700 hover:border-yellow-500 rounded">
+                                            List Rooms
+                                        </button>
+                                    </div>
+                                    <div v-if="room_owner == false" @click="deleteMember(my_id)">
+                                        <button class="w-full bg-red-500 hover:bg-red-400 text-white font-bold py-2 px-4 border-b-4 border-red-700 hover:border-red-500 rounded">
+                                            Leave Room
+                                        </button>
+                                    </div>
+                                    <div v-if="room_owner == true" @click="deleteRoom(my_id)">
+                                        <button class="w-full bg-red-500 hover:bg-red-400 text-white font-bold py-2 px-4 border-b-4 border-red-700 hover:border-red-500 rounded">
+                                            Terminate
+                                        </button>
+                                    </div>
+                                </div>
+                                <br><br>
+
                                 <form @submit.prevent="submit">
                                     <div class="text-2xl font-bold">Message</div>
                                     <input type="hidden" class="w-full" v-model="form.id_encrypt">
@@ -50,7 +70,7 @@
                                             </jet-button>
                                         </div>
                                         <div class="w-auto col-span-3 text-right text-red-400">
-                                            <div v-if="errors.text">{{ errors.text }}</div>
+                                            <div v-if="errors.text !=''">{{ errors.text }}</div>
                                         </div>
                                     </div>
                                 </form>
@@ -98,12 +118,6 @@
                                         </div>
                                     </div>
                                     <br><br>
-                                </div>
-
-                                <div v-if="room_owner == false" @click="deleteMember(my_id)">
-                                    <button class="w-full bg-red-500 hover:bg-red-400 text-white font-bold py-2 px-4 border-b-4 border-red-700 hover:border-red-500 rounded">
-                                        Leave Room
-                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -164,6 +178,14 @@ export default {
                 this.$inertia.delete(route("member.destroy", id));
             }
         }, 
+        closeRoom() {
+            this.$inertia.get(route("room.index"));
+        },
+        deleteRoom(index) {
+            if(confirm("Do you really want to terminate this room?")){
+                this.$inertia.delete(route("room.destroy", index));
+            }
+        },
     },
 };
 </script>

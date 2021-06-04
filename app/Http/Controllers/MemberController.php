@@ -91,7 +91,7 @@ class MemberController extends Controller
         $members = Member::where('id', $id)->get();
         if(count($members) > 0) {
             foreach($members as $key => $member) {
-                $roomid = Crypt::encryptString($member->roomid);
+                $roomid = Crypt::encryptString($member->rooms_id);
             }
         }
 
@@ -120,14 +120,14 @@ class MemberController extends Controller
             'id_encrypt' => 'required',
         ]);
 
-        $count = Invite::where('email', $request->email)->where('roomid', $roomid)->count();
+        $count = Invite::where('email', $request->email)->where('room_id', $roomid)->count();
         if($count > 0) {
             throw ValidationException::withMessages(['email' => $request->email.' existed']);
         }
         else {
             Invite::create([
                 'email' => $request->email, 
-                'roomid' => $roomid
+                'room_id' => $roomid
             ]);
         }
         
@@ -147,7 +147,7 @@ class MemberController extends Controller
         $invites = Invite::where('id', $id)->get();
         if(count($invites) > 0) {
             foreach($invites as $key => $invite) {
-                $roomid = Crypt::encryptString($invite->roomid);
+                $roomid = Crypt::encryptString($invite->room_id);
             }
         }
 
@@ -184,12 +184,12 @@ class MemberController extends Controller
         $invites = Invite::where('id', $id)->get();
         if(count($invites) > 0) {
             foreach($invites as $key => $invite) {
-                $roomid = $invite->roomid;
-                $roomid_enc = Crypt::encryptString($invite->roomid);
+                $roomid = $invite->room_id;
+                $roomid_enc = Crypt::encryptString($roomid);
 
                 Member::create([
-                    'roomid' => $roomid, 
-                    'memberid' => Auth::user()->id
+                    'rooms_id' => $roomid, 
+                    'member_id' => Auth::user()->id
                 ]);
             }
         }

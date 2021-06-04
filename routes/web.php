@@ -50,6 +50,8 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/room', [RoomController::class, 'index'])->name('room.index');
     Route::post('/room', [RoomController::class, 'store'])->name('room.store');
     Route::delete('/room/{id}', [RoomController::class, 'destroy'])->name('room.destroy');
+    Route::post('/room/join/{id}', [RoomController::class, 'join'])->name('room.join');
+    Route::delete('/room/leave/{id}', [RoomController::class, 'leave'])->name('room.leave');
 
     /* member */
     Route::delete('/member/{id}', [MemberController::class, 'destroy'])->name('member.destroy');

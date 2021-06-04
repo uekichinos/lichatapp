@@ -6,6 +6,8 @@ use App\Models\User;
 use Inertia\Inertia;
 use App\Models\Rooms;
 use App\Models\Invite;
+use App\Models\Member;
+use App\Models\Message;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
@@ -19,14 +21,17 @@ class DashboardController extends Controller
      */
     public function index()
     {
+        /* get invitation */
         $limit = 10;
-        $invites = Invite::where('email', Auth::user()->email)->orderBy('created_at', 'desc')->paginate($limit)->through(function ($invite) {
+        $invites = Invite::where('email', Auth::user()->email)
+                    ->orderBy('created_at', 'desc')
+                    ->paginate($limit)
+                    ->through(function ($invite) {
 
-            $room = Rooms::find($invite->roomid);
-            
+            $room = Rooms::find($invite->room_id);
             return [
                 'id' => $invite->id,
-                'roomid' => $invite->roomid,
+                'roomid' => $invite->room_id,
                 'cleandate' => date('d M Y, H:ia', strtotime($invite->created_at)),
                 'person' => User::find($room->owner)->name,
                 'id_encrypt' => Crypt::encryptString($invite->id),
@@ -34,7 +39,46 @@ class DashboardController extends Controller
             ];
         });
 
-        return Inertia::render('Dashboard', ['invites' => $invites]);
+        /* public chat room */
+        $joined_public = Member::where('member_id', Auth::user()->id)
+                            ->join('rooms', 'rooms.id', '=', 'member.rooms_id')
+                            ->where('private', 0)
+                            ->count();
+        $total_public = Rooms::where('private', 0)
+                            ->count();
+
+        /* private chat room */
+        $joined_private = Member::where('member_id', Auth::user()->id)
+                            ->join('rooms', 'rooms.id', '=', 'member.rooms_id')
+                            ->where('private', 1)
+                            ->count();
+        $total_private = Rooms::where('private', 1)
+                            ->count();
+
+        /* my chat room */
+        $limit = 10;
+        $myrooms = Rooms::where('owner', Auth::user()->id)
+                    ->orderBy('created_at', 'desc')
+                    ->paginate($limit)
+                    ->through(function ($room) {
+
+            $count_member = Member::where('rooms_id', $room->id)->count();
+            $count_message = Message::where('room_id', $room->id)->count();
+            return [
+                'name' => $room->name,
+                'count_member' => $count_member,
+                'count_message' => $count_message,
+            ];
+        });
+
+        return Inertia::render('Dashboard', [
+            'invites' => $invites, 
+            'joined_public' => $joined_public, 
+            'total_public' => $total_public,
+            'joined_private' => $joined_private, 
+            'total_private' => $total_private,
+            'myrooms' => $myrooms
+        ]);
     }
 
     /**

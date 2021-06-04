@@ -22,20 +22,39 @@ class RoomController extends Controller
     {
         $limit = 10;
         
-        $rooms = Member::where('memberid', Auth::user()->id)->orderBy('created_at', 'desc')->paginate($limit)->through(function ($member) {
-
-            $room = Rooms::find($member->roomid);
+        /* public rooms */
+        $public_rooms = Rooms::where('private', 0)->orderBy('created_at', 'desc')->paginate($limit)->through(function ($room) {
+            $count = Member::where('member_id', Auth::user()->id)->where('rooms_id', $room->id)->get()->count();
             return [
                 'name' => $room->name,
                 'desc' => $room->desc,
-                'private' => $room->private,
-                'cleandate' => date('d M Y, H:ia', strtotime($room->created_at)),
-                'person' => User::find($room->owner)->name,
-                'id_encrypt' => Crypt::encryptString($room->id),
-                'isowner' => ($room->owner == Auth::user()->id ? true : false)
+                // 'private' => $room->private,
+                'created_at' => date('d M Y, H:ia', strtotime($room->created_at)),
+                'owner_name' => User::find($room->owner)->name,
+                'room_id' => Crypt::encryptString($room->id),
+                'is_owner' => ($room->owner == Auth::user()->id ? true : false),
+                'is_join' => ($count > 0 ? 'yes' : 'no'),
             ];
         });
-        return Inertia::render('Rooms', ['rooms' => $rooms]);
+
+        /* private rooms */
+        $private_rooms = Rooms::join('member', 'rooms.id', '=', 'member.rooms_id')
+        ->where('private', 1)
+        ->where('member.member_id', '=', Auth::user()->id)
+        ->orderBy('created_at', 'desc')->paginate($limit)->through(function ($room) {
+            
+            return [
+                'name' => $room->name,
+                'desc' => $room->desc,
+                'created_at' => date('d M Y, H:ia', strtotime($room->created_at)),
+                'owner_name' => User::find($room->owner)->name,
+                'room_id' => Crypt::encryptString($room->rooms_id),
+                'is_owner' => ($room->owner == Auth::user()->id ? true : false),
+                'is_join' => 'yes',
+            ];
+        });
+
+        return Inertia::render('Rooms', ['public_rooms' => $public_rooms, 'private_rooms' => $private_rooms]);
     }
 
     /**
@@ -76,8 +95,8 @@ class RoomController extends Controller
         ]);
 
         Member::create([
-            'roomid' => $room->id,
-            'memberid' => Auth::user()->id
+            'rooms_id' => $room->id,
+            'member_id' => Auth::user()->id
         ]);
 
         return redirect(route('room.index'));
@@ -127,8 +146,42 @@ class RoomController extends Controller
     {
         $id = Crypt::decryptString($request->id);
         Rooms::destroy($id);
-        Message::where('roomid', $id)->delete();
-        Member::where('roomid', $id)->delete();
+        Message::where('room_id', $id)->delete();
+        Member::where('rooms_id', $id)->delete();
+        return redirect(route('room.index'));
+    }
+
+    /**
+     * Member join room
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function join(Request $request)
+    {
+
+        $roomid = Crypt::decryptString($request->id);
+
+        Member::create([
+            'rooms_id' => $roomid, 
+            'member_id' => Auth::user()->id
+        ]);
+
+        return redirect(route('message.index', $request->id));
+    }
+
+    /**
+     * Member lear room
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function leave(Request $request)
+    {
+
+        $roomid = Crypt::decryptString($request->id);
+        Member::where('rooms_id', $roomid)->where('member_id', Auth::user()->id)->delete();
+
         return redirect(route('room.index'));
     }
 }
