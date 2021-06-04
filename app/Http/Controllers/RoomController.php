@@ -41,7 +41,7 @@ class RoomController extends Controller
         $private_rooms = Rooms::join('member', 'rooms.id', '=', 'member.rooms_id')
         ->where('private', 1)
         ->where('member.member_id', '=', Auth::user()->id)
-        ->orderBy('created_at', 'desc')->paginate($limit)->through(function ($room) {
+        ->orderBy('rooms.created_at', 'desc')->paginate($limit)->through(function ($room) {
             
             return [
                 'name' => $room->name,
